@@ -19,7 +19,7 @@ class ProductTypeService {
                 }) || "",
                 filter: data?.filter || {},
                 attributes: data?.attributes || [],
-                status: data?.status || 1,
+                status: data?.status || 2,
                 thumb: data?.thumb || {}
             }
             const productTypeModel = new ProductTypeModel(productTypeAdapter);

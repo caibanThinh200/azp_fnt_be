@@ -17,6 +17,7 @@ class AttributeService {
                     charset: "hex"
                 }) || "",
                 unit: data?.unit || "",
+                status: data?.status || 1,
                 filter: data?.filter || "",
                 require: data?.require || false
             }

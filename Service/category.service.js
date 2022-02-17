@@ -19,6 +19,7 @@ class CategoryService {
                 }) || "",
                 productTypes: data?.productTypes || [],
                 products: data?.products || [],
+                status: data?.status || 1,
                 thumb: data?.thumb || {}
             }
             const categoryModel = new CategoryModel(categoryAdapter);
@@ -128,6 +129,7 @@ class CategoryService {
                 code: req.body?.code || "",
                 products: req.body?.products || [],
                 productTypes: req.body?.productTypes || [],
+                status: req.body?.status || 1,
                 thumb: req.body?.thumb || {}
             });
             const updateProduct = { ...currentProduct.result?._doc, ...newData };

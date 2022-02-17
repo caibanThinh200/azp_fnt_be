@@ -26,8 +26,8 @@ class ProductService {
                 subThumbs: data?.subThumb || [],
                 discount_value: data?.discount_value || 0,
                 product_type: data?.product_type || "",
-                category: data?.category,
-                status: 2
+                category: data?.category || "",
+                status: data?.status || 1
             }
             // console.log(productAdapter)
             const productModel = new ProductModel(productAdapter);
