@@ -18,6 +18,10 @@ const productTypeSchema = new mongoose.Schema({
             url: String
         }
     },
+    status: {
+        type: Number,
+        default: 1
+    },
     filter: {
         type: mongoose.Schema.Types.Mixed,
         default: {}

@@ -13,6 +13,10 @@ const attributeSchema = new mongoose.Schema({
         unique: true
     },
     unit: String,
+    status: {
+        type: Number,
+        default: 1
+    },
     filter: {
         type: {
             option: Number,
