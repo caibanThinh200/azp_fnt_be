@@ -18,6 +18,10 @@ const productTypeSchema = new mongoose.Schema({
             url: String
         }
     },
+    filter: {
+        type: mongoose.Schema.Types.Mixed,
+        default: {}
+    },
     attributes: {
         type: [mongoose.Schema.Types.ObjectId],
         ref: TEXT_DEFINE.SCHEMA.attribute

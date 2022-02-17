@@ -50,7 +50,7 @@ const TEXT_DEFINE = {
         },
         AUTH: {
             register: "Thêm user",
-            login: "Đăng nhập thành công",
+            login: "Đăng nhập",
             getList: "Lấy danh sách user",
             getDetail: "Lấy chi tiết user",
             update: "Cập nhật user"

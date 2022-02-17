@@ -12,8 +12,8 @@ class AuthService {
             const userAdapter = {
                 username: userData?.username || "",
                 password: bcrypt.hashSync(userData?.password, 10),
-                permission: data?.permission || [],
-                role: data?.role || "admin"
+                permission: userData?.permission || [],
+                role: userData?.role || "admin"
             }
             const userModel = new AuthModel(userAdapter);
             await userModel.save();
@@ -28,8 +28,9 @@ class AuthService {
         try {
             const userData = req.body;
             const currentUser = await AuthModel.findOne({username: userData?.username});
-            if(Object.keys(currentUser).length > 0 && bcrypt.compareSync(currentUser?.password, userData?.password)) {
-                const token = jwt.sign(currentUser?._id, process.env.JWT_SECRET_KEY, { expiresIn: 60 * 60 * 7});
+            // console.log(currentUser, userData.password, bcrypt.compareSync(userData?.password, currentUser?.password))
+            if(Object.keys(currentUser || {}).length > 0 && bcrypt.compareSync(userData?.password, currentUser?.password)) {
+                const token = jwt.sign({id: currentUser?._id}, process.env.JWT_SECRET_KEY, { expiresIn: 60 * 60 * 7});
                 const response = {
                     message: TEXT_DEFINE.ACTION.AUTH.login,
                     token
@@ -46,12 +47,13 @@ class AuthService {
 
     static async GetUserByTokenService(req, res) {
         try {
-            const token = req.headers["Authorization"].replace("Bearer ", "");
-            jwt.verify(token, process.env.JWT_SECRET_KEY, (err, decoded) => {
+            const token = req.headers["authorization"].replace("Bearer ", "");
+            return jwt.verify(token, process.env.JWT_SECRET_KEY, async (err, decoded) => {
                 if(err) {
                     return getActionResult(500, null, TEXT_DEFINE.ACTION.AUTH.getDetail, err);
                 } else {
-                    return getActionResult(500, decoded);
+                    const user = await AuthModel.findOne({id: decoded?.id});
+                    return getActionResult(200, user);
                 }
             })
         } catch(e) {

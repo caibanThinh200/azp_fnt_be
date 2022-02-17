@@ -17,6 +17,7 @@ class AttributeService {
                     charset: "hex"
                 }) || "",
                 unit: data?.unit || "",
+                filter: data?.filter || "",
                 require: data?.require || false
             }
             const attributeModel = new AttributeModel(attributeAdapter);
@@ -96,6 +97,7 @@ class AttributeService {
                 name: req.body?.name || "",
                 code: req.body?.code || "",
                 require: req.body?.require || false,
+                filter: req.body?.filter || "",
                 unit: req.body?.unit || ""
             });
             const updateAttribute = { ...currentAttribute.result._doc, ...newData };

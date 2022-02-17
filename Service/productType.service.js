@@ -17,6 +17,7 @@ class ProductTypeService {
                     capitalization: "uppercase",
                     charset: "hex"
                 }) || "",
+                filter: data?.filter || {},
                 attributes: data?.attributes || [],
                 status: data?.status || 1,
                 thumb: data?.thumb || {}
@@ -88,9 +89,10 @@ class ProductTypeService {
                 name: req.body?.name || "",
                 attributes: req.body?.attributes || [],
                 status: req.body?.status || 1,
+                filter: req.body?.filter || {},
                 thumb: req.body?.thumb || {}
             });
-            const updateProductType = { ...currentProductType, ...newData };
+            const updateProductType = { ...currentProductType.result._doc, ...newData };
             await ProductTypeModel.findByIdAndUpdate(req.params?.id, updateProductType, { new: true })
             return getActionResult(200, TEXT_DEFINE.ACTION.PRODUCT_TYPE.update);
         } catch (e) {

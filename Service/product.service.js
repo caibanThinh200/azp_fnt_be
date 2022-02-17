@@ -5,6 +5,7 @@ import TEXT_DEFINE from "../constant/textDefine";
 import { UpdateCategory } from "../Middleware/product.middleware";
 import ProductModel from "../Model/product";
 import { getActionResult, removeObjectEmptyValue } from "../Util/function";
+import _ from "lodash";
 
 class ProductService {
     static async AddProductService(req, res) {
@@ -40,17 +41,58 @@ class ProductService {
 
     static async GetListProductService(req, res) {
         try {
-            const filterParams = req?.query,
+            let filterParams = (req?.query),
                 startIndex = (filterParams?.page_index || 1 - 1) * (filterParams?.page_size || 10),
-                endIndex = (filterParams?.page_index || 1) * (filterParams?.page_size || 10);
+                endIndex = (filterParams?.page_index || 1) * (filterParams?.page_size || 10),
+                sortParams = { updated_at: "desc" };
+            if (filterParams?.attribute && Object.keys(JSON.parse(filterParams?.attribute)).length > 0) {
+                let attributeParams = JSON.parse(filterParams?.attribute);
+                Object.keys(attributeParams).map(item => {
+                    filterParams = { ...filterParams, [`attribute.${item}`]: attributeParams[item] }
+                })
+                filterParams = _.omit(filterParams, ["attribute"]);
+            }
+            if (filterParams?.price) {
+                let priceQuery = {};
+                switch (parseInt(filterParams?.price)) {
+                    case 1: {
+                        priceQuery = { $gte: 10000000 };
+                        break;
+                    }
+                    case 2: {
+                        priceQuery = { $lte: 10000000, $gte: 5000000 };
+                        break;
+                    }
+                    case 3: {
+                        priceQuery = { $lte: 5000000, $gte: 3000000};
+                        break;
+                    }
+                    case 4: {
+                        priceQuery = { $lte: 3000000 };
+                        break;
+                    }
+                    default: ""
+                }
+                filterParams = { ...filterParams, price: priceQuery }
+            }
+            if(filterParams?.date) {
+                switch(parseInt(filterParams?.date)) {
+                    case 1: {
+                        sortParams = {...sortParams, created_at: "desc"};
+                        break;
+                    }
+                    case 2: {
+                        sortParams = {...sortParams, created_at: "asc"};
+                        break;
+                    }
+                    default: ""
+                }
+                sortParams = _.omit(sortParams, ["updated_at"])
+            }
             const resultAll = await ProductModel.find();
-            const resultList = await ProductModel.find(filterParams)
-                .sort({ updated_at: "desc" })
-            // .then(result => result.map(product => ({
-            //     ...product._doc,
-            //     created_at: moment(product.created_at).format("DD-MM-YYYY hh:mm:ss"),
-            //     updated_at: moment(product.updated_at).format("DD-MM-YYYY hh:mm:ss")
-            // })));
+            const resultList = await ProductModel
+                .find(filterParams)
+                .sort(sortParams);
             const responseData = {
                 total: resultAll.length,
                 page_index: filterParams?.page_index || 1,
@@ -97,6 +139,7 @@ class ProductService {
             });
             const updateProduct = { ...currentProduct.result._doc, ...newData };
             // await UpdateCategory(updateProduct);
+            // console.log(updateProduct.detailDescription)
             await ProductModel.findByIdAndUpdate(req.params?.id, updateProduct, { new: true });
             return getActionResult(200, TEXT_DEFINE.ACTION.PRODUCT.update);
         } catch (e) {
