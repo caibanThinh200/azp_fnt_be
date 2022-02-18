@@ -97,6 +97,7 @@ class AttributeService {
             const newData = removeObjectEmptyValue({
                 name: req.body?.name || "",
                 code: req.body?.code || "",
+                status: req.body?.status || 1,
                 require: req.body?.require || false,
                 filter: req.body?.filter || "",
                 unit: req.body?.unit || ""
